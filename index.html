@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Networking Midterm Study Guide</title>
+<meta name="description" content="Midterm study guide: OSI, Ethernet, ports, IPv4 subnetting, IPv6, NDP, SLAAC/DHCPv6, virtualization, cloud, and security basics.">
+<style>
+:root{
+  --bg:#0f1419;--panel:#161d24;--panel2:#1c252e;--text:#e6edf3;--muted:#9aa7b4;
+  --accent:#3fb6c8;--accent2:#f2b84b;--good:#5fd38d;--bad:#ff7b72;--border:#2a3540;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#f6f8fa;--panel:#ffffff;--panel2:#eef2f6;--text:#1f2328;--muted:#57606a;
+  --accent:#0b7d8f;--accent2:#9a6300;--good:#1a7f37;--bad:#cf222e;--border:#d0d7de;}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 18px;border-bottom:1px solid var(--border);background:var(--panel)}
+header h1{margin:0 0 4px;font-size:1.7rem}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;padding:8px 12px}
+nav a{display:inline-block;color:var(--text);text-decoration:none;font-size:.88rem;padding:5px 10px;margin-right:4px;border:1px solid var(--border);border-radius:999px;background:var(--panel2)}
+nav a:hover{border-color:var(--accent);color:var(--accent)}
+main{max-width:980px;margin:0 auto;padding:16px}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 18px 10px;margin:18px 0}
+h2{margin:0 0 12px;font-size:1.35rem;color:var(--accent)}
+h3{margin:18px 0 8px;font-size:1.05rem}
+code,.mono{font-family:var(--mono);font-size:.92em;background:var(--panel2);padding:1px 5px;border-radius:4px}
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--panel2)}
+.tip{border-left:4px solid var(--accent2);background:var(--panel2);padding:10px 12px;border-radius:6px;margin:10px 0 14px}
+.fix{border-left:4px solid var(--bad);background:var(--panel2);padding:10px 12px;border-radius:6px;margin:10px 0 14px}
+.fix b{color:var(--bad)}
+ul,ol{padding-left:22px}
+li{margin:3px 0}
+details{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+details[open] summary{color:var(--accent)}
+.ans{color:var(--good);margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.card h4{margin:0 0 6px;color:var(--accent2)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 16px 40px}
+.frame{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0}
+.frame div{flex:1 1 90px;text-align:center;border:1px solid var(--border);border-radius:6px;padding:6px 4px;background:var(--panel2);font-size:.82rem}
+.frame div span{display:block;color:var(--accent2);font-family:var(--mono)}
+@media (max-width:600px){section{padding:14px 12px 6px}header h1{font-size:1.4rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Networking Midterm Study Guide</h1>
+  <p>OSI · Ethernet · Ports · IPv4 subnetting · IPv6 · NDP · SLAAC/DHCPv6 · Virtualization · Cloud · Security</p>
+</header>
+
+<nav>
+  <a href="#fixes">Fix These First</a>
+  <a href="#osi">OSI &amp; PDUs</a>
+  <a href="#ethernet">Ethernet Frame</a>
+  <a href="#acronyms">Acronyms</a>
+  <a href="#ports">Ports</a>
+  <a href="#subnet">IPv4 Subnetting</a>
+  <a href="#worked">Worked Problems</a>
+  <a href="#packet">Packet Breakdown</a>
+  <a href="#ipv6">IPv6 Addressing</a>
+  <a href="#header">IPv6 Header</a>
+  <a href="#ndp">NDP / ICMPv6</a>
+  <a href="#slaac">SLAAC &amp; DHCPv6</a>
+  <a href="#virt">Virtualization &amp; Cloud</a>
+  <a href="#sec">Security &amp; Networking Basics</a>
+  <a href="#quiz">Self-Quiz</a>
+</nav>
+
+<main>
+
+<!-- ============ FIXES ============ -->
+<section id="fixes">
+  <h2>Fix These First (missed on the last exam)</h2>
+  <div class="fix">
+    <ul>
+      <li><b>Preamble</b> is <b>7 bytes</b> (not bits). The 8th byte is the <b>SFD</b> = <code>10101011</code>.</li>
+      <li><b>MAC address</b> = <b>48 bits</b> = 6 hex pairs. First 3 pairs = OUI (vendor).</li>
+      <li><b>IPv4 address</b> = 32 bits = <b>4</b> octets / hex pairs (not 3).</li>
+      <li><b>PDUs:</b> L4 = Segment (TCP) / Datagram (UDP), L3 = Packet, L2 = Frame, L1 = Bits.</li>
+      <li><b>Port 23</b> = Telnet · <b>88</b> = Kerberos · <b>137</b> = NetBIOS Name Service · <b>161</b> = SNMP.</li>
+      <li><b>ARP</b> = Address Resolution Protocol · <b>FCS</b> = Frame Check Sequence · <b>OUI</b> = Organizationally Unique Identifier · <b>PDU</b> = Protocol Data Unit · <b>SFD</b> = Start Frame Delimiter · <b>MAC</b> = Media Access Control.</li>
+      <li><b>Capture vs display filter:</b> capture filter decides what gets <i>recorded</i>; display filter only <i>hides/shows</i> what was already captured.</li>
+      <li><b>Subnet ID</b> must land on a block-size boundary: 172.16.200.187/19 → <code>172.16.192.0</code>, not 172.16.200.0.</li>
+      <li><b>MTU length</b> = total frame length − 14 (Ethernet header). 60 − 14 = <b>46</b>.</li>
+      <li>EtherType for IPv4 is <code>0x0800</code> (4 hex digits), IPv6 <code>0x86DD</code>, ARP <code>0x0806</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ OSI ============ -->
+<section id="osi">
+  <h2>OSI Model &amp; PDUs</h2>
+  <div class="tip">Top-down mnemonic: <b>A</b>ll <b>P</b>eople <b>S</b>eem <b>T</b>o <b>N</b>eed <b>D</b>ata <b>P</b>rocessing</div>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Layer</th><th>PDU</th><th>Address / Examples</th></tr>
+    <tr><td>7</td><td>Application</td><td>Data</td><td>HTTP, DNS, FTP, SMTP</td></tr>
+    <tr><td>6</td><td>Presentation</td><td>Data</td><td>Encryption, encoding, compression</td></tr>
+    <tr><td>5</td><td>Session</td><td>Data</td><td>Opens/closes sessions</td></tr>
+    <tr><td>4</td><td>Transport</td><td>Segment (TCP) / Datagram (UDP)</td><td><b>Ports</b>, TCP, UDP</td></tr>
+    <tr><td>3</td><td>Network</td><td>Packet</td><td><b>IP address</b>, ICMP, routers</td></tr>
+    <tr><td>2</td><td>Data Link</td><td>Frame</td><td><b>MAC address</b>, OUI, FCS, switches</td></tr>
+    <tr><td>1</td><td>Physical</td><td>Bits</td><td>Cables, signals, preamble/SFD</td></tr>
+  </table></div>
+  <h3>Layer numbers for protocols/terms</h3>
+  <div class="tw"><table>
+    <tr><th>Term</th><th>Layer</th></tr>
+    <tr><td>ARP</td><td>2 (works between 2 and 3: maps IP → MAC)</td></tr>
+    <tr><td>IP, ICMP</td><td>3</td></tr>
+    <tr><td>TCP, UDP, Port</td><td>4</td></tr>
+    <tr><td>MAC, OUI, FCS</td><td>2</td></tr>
+    <tr><td>Preamble / SFD</td><td>1 (sent before the frame)</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ ETHERNET ============ -->
+<section id="ethernet">
+  <h2>Ethernet Frame</h2>
+  <div class="frame">
+    <div>Preamble<span>7 B</span></div>
+    <div>SFD<span>1 B</span></div>
+    <div>Dest MAC<span>6 B</span></div>
+    <div>Src MAC<span>6 B</span></div>
+    <div>EtherType<span>2 B</span></div>
+    <div>Data<span>46–1500 B</span></div>
+    <div>FCS<span>4 B</span></div>
+  </div>
+  <ul>
+    <li><b>Header</b> = Dest MAC + Src MAC + EtherType = <b>14 bytes</b>.</li>
+    <li><b>Minimum frame</b> = <b>64 bytes</b> · <b>Maximum frame</b> = <b>1518 bytes</b> (preamble/SFD not counted).</li>
+    <li><b>SFD</b> binary = <code>10101011</code> (ends in 11 to say "frame starts now").</li>
+    <li><b>EtherType</b> is 16 bits: <code>0x0800</code> IPv4 · <code>0x86DD</code> IPv6 · <code>0x0806</code> ARP.</li>
+    <li><b>FCS</b> = CRC error check at the end of the frame.</li>
+    <li>MAC = 48 bits, 6 hex pairs, e.g. <code>00:1A:2B:3C:4D:5E</code> → OUI = <code>00:1A:2B</code>.</li>
+    <li>Broadcast MAC = <code>ff:ff:ff:ff:ff:ff</code> (ARP requests go here).</li>
+  </ul>
+</section>
+
+<!-- ============ ACRONYMS ============ -->
+<section id="acronyms">
+  <h2>Acronyms</h2>
+  <div class="tw"><table>
+    <tr><th>Acronym</th><th>Stands for</th></tr>
+    <tr><td>ARP</td><td>Address Resolution Protocol</td></tr>
+    <tr><td>FCS</td><td>Frame Check Sequence</td></tr>
+    <tr><td>ICMP</td><td>Internet Control Message Protocol</td></tr>
+    <tr><td>IP</td><td>Internet Protocol</td></tr>
+    <tr><td>OUI</td><td>Organizationally Unique Identifier</td></tr>
+    <tr><td>PDU</td><td>Protocol Data Unit</td></tr>
+    <tr><td>TTL</td><td>Time To Live</td></tr>
+    <tr><td>SFD</td><td>Start Frame Delimiter</td></tr>
+    <tr><td>TCP / UDP</td><td>Transmission Control Protocol / User Datagram Protocol</td></tr>
+    <tr><td>MAC</td><td>Media Access Control</td></tr>
+    <tr><td>MTU</td><td>Maximum Transmission Unit</td></tr>
+    <tr><td>NAT</td><td>Network Address Translation</td></tr>
+    <tr><td>DHCP / DNS</td><td>Dynamic Host Configuration Protocol / Domain Name System</td></tr>
+    <tr><td>NDP</td><td>Neighbor Discovery Protocol</td></tr>
+    <tr><td>SLAAC</td><td>Stateless Address Auto-Configuration</td></tr>
+    <tr><td>DAD</td><td>Duplicate Address Detection</td></tr>
+    <tr><td>GUA / ULA</td><td>Global Unicast Address / Unique Local Address</td></tr>
+    <tr><td>RS / RA</td><td>Router Solicitation / Router Advertisement</td></tr>
+    <tr><td>NS / NA</td><td>Neighbor Solicitation / Neighbor Advertisement</td></tr>
+    <tr><td>IANA</td><td>Internet Assigned Numbers Authority</td></tr>
+    <tr><td>CIDR</td><td>Classless Inter-Domain Routing</td></tr>
+    <tr><td>MFA</td><td>Multi-Factor Authentication</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ PORTS ============ -->
+<section id="ports">
+  <h2>Ports</h2>
+  <div class="tw"><table>
+    <tr><th>Port</th><th>Service</th><th>TCP/UDP</th></tr>
+    <tr><td>20 / 21</td><td>FTP data / FTP control</td><td>TCP</td></tr>
+    <tr><td>22</td><td>SSH (also SFTP, SCP)</td><td>TCP</td></tr>
+    <tr><td>23</td><td>Telnet</td><td>TCP</td></tr>
+    <tr><td>25</td><td>SMTP</td><td>TCP</td></tr>
+    <tr><td>53</td><td>DNS</td><td>UDP/TCP</td></tr>
+    <tr><td>67 / 68</td><td>DHCP server / client</td><td>UDP</td></tr>
+    <tr><td>69</td><td>TFTP</td><td>UDP</td></tr>
+    <tr><td>80</td><td>HTTP</td><td>TCP</td></tr>
+    <tr><td>88</td><td>Kerberos</td><td>TCP/UDP</td></tr>
+    <tr><td>110</td><td>POP3</td><td>TCP</td></tr>
+    <tr><td>123</td><td>NTP</td><td>UDP</td></tr>
+    <tr><td>137–139</td><td>NetBIOS</td><td>UDP/TCP</td></tr>
+    <tr><td>143</td><td>IMAP</td><td>TCP</td></tr>
+    <tr><td>161 / 162</td><td>SNMP / SNMP traps</td><td>UDP</td></tr>
+    <tr><td>389</td><td>LDAP</td><td>TCP</td></tr>
+    <tr><td>443</td><td>HTTPS</td><td>TCP</td></tr>
+    <tr><td>445</td><td>SMB</td><td>TCP</td></tr>
+    <tr><td>3389</td><td>RDP</td><td>TCP</td></tr>
+  </table></div>
+  <h3>TCP vs UDP</h3>
+  <div class="grid">
+    <div class="card"><h4>TCP</h4>Connection-oriented, 3-way handshake (SYN → SYN/ACK → ACK), reliable, ordered, retransmits. Flags: SYN, ACK, FIN, RST, PSH, URG.</div>
+    <div class="card"><h4>UDP</h4>Connectionless, no handshake, no guarantees, low overhead and fast. Used by DNS, DHCP, TFTP, NTP, SNMP, streaming/VoIP.</div>
+  </div>
+</section>
+
+<!-- ============ SUBNETTING ============ -->
+<section id="subnet">
+  <h2>IPv4 Subnetting</h2>
+  <h3>Classes</h3>
+  <div class="tw"><table>
+    <tr><th>Class</th><th>1st octet</th><th>Default</th><th>Mask</th></tr>
+    <tr><td>A</td><td>1–126</td><td>/8</td><td>255.0.0.0</td></tr>
+    <tr><td>B</td><td>128–191</td><td>/16</td><td>255.255.0.0</td></tr>
+    <tr><td>C</td><td>192–223</td><td>/24</td><td>255.255.255.0</td></tr>
+  </table></div>
+  <p>127.x.x.x = loopback. Private ranges: <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>.</p>
+
+  <h3>Mask octet values</h3>
+  <div class="tw"><table>
+    <tr><th>Bits on</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+    <tr><th>Octet</th><td>128</td><td>192</td><td>224</td><td>240</td><td>248</td><td>252</td><td>254</td><td>255</td></tr>
+    <tr><th>Block size</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+  </table></div>
+
+  <h3>Formulas</h3>
+  <ul>
+    <li><b># subnets</b> = 2<sup>borrowed bits</sup> (borrowed = new prefix − default prefix)</li>
+    <li><b># hosts per subnet</b> = 2<sup>host bits</sup> − 2 (host bits = 32 − prefix)</li>
+    <li><b>Block size</b> = 256 − the interesting mask octet</li>
+  </ul>
+
+  <h3>Method: given IP + prefix</h3>
+  <ol>
+    <li>Class from 1st octet.</li>
+    <li>Write the mask; find the <b>interesting octet</b> (the one that isn't 255 or 0).</li>
+    <li>Block size = 256 − that octet.</li>
+    <li>Subnet ID = biggest multiple of the block size ≤ the IP's value in that octet. Octets after it become 0.</li>
+    <li>Broadcast = next subnet ID − 1. Octets after it become 255.</li>
+  </ol>
+
+  <h3>Method: "Need X subnets"</h3>
+  <ol>
+    <li>Find the smallest <i>n</i> where 2<sup>n</sup> ≥ X.</li>
+    <li>New prefix = default prefix + <i>n</i>.</li>
+    <li>Then run the method above on the given IP.</li>
+  </ol>
+  <div class="tip">Powers of 2: 2<sup>8</sup>=256 · 2<sup>10</sup>=1,024 · 2<sup>11</sup>=2,048 · 2<sup>12</sup>=4,096 · 2<sup>13</sup>=8,192 · 2<sup>14</sup>=16,384 · 2<sup>15</sup>=32,768 · 2<sup>16</sup>=65,536 · 2<sup>17</sup>=131,072 · 2<sup>18</sup>=262,144</div>
+  <div class="tip"><b>"Location (3rd subnet, 5th host)":</b> list subnet IDs by block size from the start of the network, pick the 3rd, then add 5 to it. Example: 192.168.25.0/28 → subnets .0, .16, .32 → 3rd subnet = .32, 5th host = <code>192.168.25.37</code>. If your instructor skips the zero subnet, start counting at .16 instead, so ask which convention they use.</div>
+</section>
+
+<!-- ============ WORKED ============ -->
+<section id="worked">
+  <h2>Worked Problems (from the last exam)</h2>
+  <div class="tw"><table>
+    <tr><th>Problem</th><th>Class</th><th>Mask</th><th>Subnet ID</th><th>Broadcast</th><th># Subnets</th><th># Hosts</th></tr>
+    <tr><td>192.168.25.214 /28</td><td>C</td><td>255.255.255.240</td><td>192.168.25.208</td><td>192.168.25.223</td><td>16</td><td>14</td></tr>
+    <tr><td>172.16.200.187 /19</td><td>B</td><td>255.255.224.0</td><td>172.16.192.0</td><td>172.16.223.255</td><td>8</td><td>8,190</td></tr>
+    <tr><td>10.44.23.55 /19</td><td>A</td><td>255.255.224.0</td><td>10.44.0.0</td><td>10.44.31.255</td><td>2,048</td><td>8,190</td></tr>
+    <tr><td>10.75.112.87 /26</td><td>A</td><td>255.255.255.192</td><td>10.75.112.64</td><td>10.75.112.127</td><td>262,144</td><td>62</td></tr>
+    <tr><td>Need 2,500 · 10.145.66.99</td><td>A /20</td><td>255.255.240.0</td><td>10.145.64.0</td><td>10.145.79.255</td><td>4,096</td><td>4,094</td></tr>
+    <tr><td>Need 30,000 · 10.88.54.214</td><td>A /23</td><td>255.255.254.0</td><td>10.88.54.0</td><td>10.88.55.255</td><td>32,768</td><td>510</td></tr>
+    <tr><td>Need 200 · 172.16.65.30</td><td>B /24</td><td>255.255.255.0</td><td>172.16.65.0</td><td>172.16.65.255</td><td>256</td><td>254</td></tr>
+    <tr><td>Need 150,000 · 10.10.10.10</td><td>A /26</td><td>255.255.255.192</td><td>10.10.10.0</td><td>10.10.10.63</td><td>262,144</td><td>62</td></tr>
+  </table></div>
+  <details><summary>Walkthrough: 172.16.200.187 /19</summary>
+    <ol>
+      <li>172 → Class B, default /16. Borrowed 3 bits → 2<sup>3</sup> = 8 subnets.</li>
+      <li>/19 = 8+8+3 → mask 255.255.<b>224</b>.0. Interesting octet = 3rd.</li>
+      <li>Block = 256 − 224 = 32 → 0, 32, 64, 96, 128, 160, <b>192</b>, 224.</li>
+      <li>200 falls in 192–223 → Subnet <code>172.16.192.0</code>, Broadcast <code>172.16.223.255</code>.</li>
+      <li>Host bits = 32 − 19 = 13 → 2<sup>13</sup> − 2 = 8,190 hosts.</li>
+    </ol>
+  </details>
+  <details><summary>Walkthrough: Need 2,500 subnets with 10.145.66.99</summary>
+    <ol>
+      <li>Class A, default /8. 2<sup>12</sup> = 4,096 ≥ 2,500 → borrow 12 → <b>/20</b>.</li>
+      <li>/20 = 8+8+4 → 255.255.<b>240</b>.0. Block = 16 in the 3rd octet.</li>
+      <li>66 sits in 64–79 → Subnet <code>10.145.64.0</code>, Broadcast <code>10.145.79.255</code>.</li>
+      <li>Host bits = 12 → 4,096 − 2 = 4,094 hosts.</li>
+    </ol>
+  </details>
+</section>
+
+<!-- ============ PACKET ============ -->
+<section id="packet">
+  <h2>Packet Breakdown Cheat Sheet</h2>
+  <div class="grid">
+    <div class="card"><h4>ARP</h4>EtherType <code>0x0806</code>. Request goes to broadcast <code>ff:ff:ff:ff:ff:ff</code>; reply is unicast. Opcode 1 = request, 2 = reply. Gratuitous ARP = announcing your own IP.</div>
+    <div class="card"><h4>IPv4 header</h4>Min 20 bytes. Protocol field: <b>1</b> = ICMP, <b>6</b> = TCP, <b>17</b> = UDP. TTL drops by 1 per router hop.</div>
+    <div class="card"><h4>ICMP</h4>Type <b>8</b> = Echo Request (ping), Type <b>0</b> = Echo Reply. Type 3 = Destination Unreachable, Type 11 = Time Exceeded.</div>
+    <div class="card"><h4>DHCP (UDP 67/68)</h4>Option 53 message types: 1 Discover, 2 Offer, 3 Request, 5 ACK (<b>DORA</b>).</div>
+  </div>
+  <div class="tip"><b>Lengths:</b> MTU length = total frame length − 14. Example: 60-byte frame → 46.</div>
+</section>
+
+<!-- ============ IPv6 ============ -->
+<section id="ipv6">
+  <h2>IPv6 Addressing</h2>
+  <ul>
+    <li>IPv4 = 32 bits, dotted decimal (8.8.8.8). IPv6 = <b>128 bits</b>, <b>8 hextets</b> of 4 hex digits.</li>
+    <li><b>Shortening:</b> drop leading zeros in a hextet (<code>0db8</code> → <code>db8</code>); replace one run of all-zero hextets with <code>::</code> (only once).</li>
+    <li>Example: <code>2001:0db8:85a3:0000:0000:8a2e:0370:7334</code> → <code>2001:db8:85a3::8a2e:370:7334</code></li>
+    <li>Standard split: <b>/64 network prefix</b> + <b>64-bit interface (host) ID</b>.</li>
+    <li>NAT exists in IPv4 because addresses ran out; IPv6 has enough to skip it.</li>
+  </ul>
+  <h3>Address types</h3>
+  <div class="tw"><table>
+    <tr><th>Prefix</th><th>Type</th><th>Spot it</th><th>IPv4 equivalent</th></tr>
+    <tr><td>2000::/3</td><td>Global Unicast (GUA)</td><td>Starts with 2 or 3</td><td>Public IP</td></tr>
+    <tr><td>fc00::/7 (fd00::/8 in use)</td><td>Unique Local (ULA)</td><td>Starts with fd</td><td>Private IP</td></tr>
+    <tr><td>fe80::/10</td><td>Link-Local</td><td>Starts with fe80</td><td>169.254.x.x (APIPA)</td></tr>
+    <tr><td>ff00::/8</td><td>Multicast</td><td>Starts with ff</td><td>224.x.x.x</td></tr>
+    <tr><td>::1/128</td><td>Loopback</td><td>::1</td><td>127.0.0.1</td></tr>
+    <tr><td>::/128</td><td>Unspecified</td><td>::</td><td>0.0.0.0</td></tr>
+  </table></div>
+  <p><code>ff02::1</code> = all nodes · <code>ff02::2</code> = all routers.</p>
+
+  <h3>GUA structure</h3>
+  <div class="frame">
+    <div>Global Routing Prefix (P)<span>48 bits</span></div>
+    <div>Subnet ID (S)<span>16 bits</span></div>
+    <div>Interface ID (I)<span>64 bits</span></div>
+  </div>
+  <p>P + S + I = 128. <b>Subnet prefix</b> = P + S (the /64).</p>
+  <details><summary>Example: 2606:4700:1234:25::8</summary>
+    <p>Expand: <code>2606:4700:1234:0025:0000:0000:0000:0008</code><br>
+    Type: GUA · GRP: <code>2606:4700:1234</code> · Subnet ID: <code>0025</code> · Host ID: <code>0000:0000:0000:0008</code></p>
+  </details>
+  <details><summary>Example: fd42:17:89ab:5::22</summary>
+    <p>Expand: <code>fd42:0017:89ab:0005:0000:0000:0000:0022</code><br>
+    Type: ULA · GRP: <code>fd42:0017:89ab</code> · Subnet ID: <code>0005</code> · Host ID: <code>0000:0000:0000:0022</code></p>
+  </details>
+
+  <h3>Who hands out addresses</h3>
+  <p><b>IANA</b> → <b>RIR</b> → <b>ISP</b> (/32) → <b>Company</b> (/48) → subnets (/64).</p>
+  <div class="tw"><table>
+    <tr><th>Region</th><th>RIR</th></tr>
+    <tr><td>North America</td><td>ARIN (American Registry for Internet Numbers)</td></tr>
+    <tr><td>Latin America &amp; Caribbean</td><td>LACNIC</td></tr>
+    <tr><td>Africa</td><td>AFRINIC</td></tr>
+    <tr><td>Europe, Middle East, most of Russia</td><td>RIPE NCC</td></tr>
+    <tr><td>Asia Pacific / Australia</td><td>APNIC</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ HEADER ============ -->
+<section id="header">
+  <h2>IPv6 Header vs IPv4 Header</h2>
+  <ul>
+    <li>IPv6 header is <b>always 40 bytes</b> with fewer fields, so routers process it faster.</li>
+    <li><b>Version</b> = 4 bits (value 4 or 6).</li>
+    <li>Source and Destination address = 128 bits each.</li>
+  </ul>
+  <div class="tw"><table>
+    <tr><th>IPv4 field</th><th>IPv6 version</th></tr>
+    <tr><td>Version</td><td>Version (kept)</td></tr>
+    <tr><td>Type of Service</td><td>Traffic Class</td></tr>
+    <tr><td>Total Length</td><td>Payload Length</td></tr>
+    <tr><td>TTL</td><td>Hop Limit</td></tr>
+    <tr><td>Protocol</td><td>Next Header</td></tr>
+    <tr><td>Source / Destination</td><td>Kept (now 128-bit)</td></tr>
+    <tr><td>IHL, Identification, Flags, Fragment Offset, Header Checksum, Options, Padding</td><td>Removed</td></tr>
+    <tr><td>(none)</td><td><b>Flow Label</b> (new)</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ NDP ============ -->
+<section id="ndp">
+  <h2>NDP / ICMPv6</h2>
+  <p>NDP does the Layer 3 → Layer 2 resolution (ARP's job) using <b>multicast</b> instead of broadcast.</p>
+  <div class="tw"><table>
+    <tr><th>Type</th><th>Message</th><th>What it does</th></tr>
+    <tr><td>133</td><td>Router Solicitation (RS)</td><td>Host asks "any routers here?"</td></tr>
+    <tr><td>134</td><td>Router Advertisement (RA)</td><td>Router says "I'm here" + prefix info. All-nodes multicast; Cisco sends every 200 s by default. Used by SLAAC.</td></tr>
+    <tr><td>135</td><td>Neighbor Solicitation (NS)</td><td>Find the MAC for a known IPv6 address (like ARP request). Also used for DAD.</td></tr>
+    <tr><td>136</td><td>Neighbor Advertisement (NA)</td><td>Unicast reply with the MAC (like ARP reply).</td></tr>
+    <tr><td>137</td><td>Redirect</td><td>Router points host to a better next hop.</td></tr>
+  </table></div>
+  <div class="tip">Memory trick: <b>R</b>outer pair first (133 RS, 134 RA), then <b>N</b>eighbor pair (135 NS, 136 NA), then Redirect (137). Solicitation = ask, Advertisement = answer.</div>
+</section>
+
+<!-- ============ SLAAC ============ -->
+<section id="slaac">
+  <h2>SLAAC &amp; DHCPv6</h2>
+  <ul>
+    <li>Every IPv6 node needs a <b>GUA</b> to talk outside its local segment.</li>
+    <li><b>Stateful</b> = DHCP server tracks addresses. <b>Stateless</b> = no server tracking.</li>
+    <li><b>SLAAC does NOT provide DNS.</b></li>
+  </ul>
+  <h3>RA flags tell the host what to do</h3>
+  <div class="tw"><table>
+    <tr><th>Flag</th><th>Meaning</th><th>Method</th></tr>
+    <tr><td>A flag</td><td>Host can auto-generate its own GUA</td><td>SLAAC</td></tr>
+    <tr><td>O flag</td><td>Get DNS server list + domain name from a stateless DHCPv6 server, not the address</td><td>Stateless DHCPv6 (SLAAC + DHCP for DNS)</td></tr>
+    <tr><td>M flag</td><td>Get address (GUA) and DNS from a DHCPv6 server</td><td>Stateful DHCPv6</td></tr>
+  </table></div>
+  <p>In stateful DHCPv6, the host still sets its <b>default gateway from the RA</b>.</p>
+  <h3>SLAAC steps</h3>
+  <ol>
+    <li>Node configures itself with a link-local address.</li>
+    <li>Node runs DAD.</li>
+    <li>Node sends an RS; router replies with an RA.</li>
+    <li>Node combines the RA prefix with its interface ID to build its IPv6 address.</li>
+    <li>Run DAD again.</li>
+  </ol>
+  <p><b>Stateless logic:</b> generate address → run DAD → repeat until DAD is clean.</p>
+  <h3>DHCPv6 messages (SARR)</h3>
+  <div class="tw"><table>
+    <tr><th>Message</th><th>Sent by</th><th>IPv4 DORA match</th></tr>
+    <tr><td>Solicit</td><td>Client/node</td><td>Discover</td></tr>
+    <tr><td>Advertise</td><td>Server</td><td>Offer</td></tr>
+    <tr><td>Request</td><td>Client/node</td><td>Request</td></tr>
+    <tr><td>Reply</td><td>Server</td><td>ACK</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ VIRT ============ -->
+<section id="virt">
+  <h2>Virtualization &amp; Cloud</h2>
+  <p><b>Hypervisor</b> = software that controls how physical resources (CPU, RAM, storage) are shared between VMs.</p>
+  <div class="grid">
+    <div class="card"><h4>Type 1 (bare metal)</h4>Runs directly on hardware. Used in data centers, server environments, enterprise. Examples: VMware ESXi, Microsoft Hyper-V, Proxmox.</div>
+    <div class="card"><h4>Type 2 (hosted)</h4>Runs inside another OS as an app. Examples: VirtualBox, Parallels, VMware Workstation.</div>
+  </div>
+  <h3>Scaling</h3>
+  <ul>
+    <li><b>Vertical</b> = add resources to the same machine (more RAM/CPU).</li>
+    <li><b>Horizontal</b> = add more machines.</li>
+  </ul>
+  <h3>Cloud deployment types</h3>
+  <div class="tw"><table>
+    <tr><th>Type</th><th>Description</th></tr>
+    <tr><td>On-prem / Local / Traditional</td><td>No cloud; you own and run everything</td></tr>
+    <tr><td>Private cloud</td><td>Infrastructure dedicated to one organization</td></tr>
+    <tr><td>Public cloud</td><td>Owned and operated by a third party; pay-as-you-go pricing</td></tr>
+    <tr><td>Hybrid cloud</td><td>Combines public and private</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section id="sec">
+  <h2>Security &amp; Networking Basics</h2>
+  <h3>Networking</h3>
+  <ul>
+    <li><b>LAN</b> = local area (one building/campus). <b>WAN</b> = connects LANs over large distances (the internet is the biggest WAN).</li>
+    <li><b>IEEE standards:</b> 802.3 = Ethernet, 802.11 = Wi-Fi. Wi-Fi 7 = 802.11be. Cat6 = up to 10 Gbps at ~55 m (1 Gbps at 100 m).</li>
+    <li><b>MAC</b> = Layer 2 physical address · <b>IP</b> = Layer 3 logical address · <b>Ports</b> = Layer 4.</li>
+  </ul>
+  <h3>Cybersecurity</h3>
+  <div class="grid">
+    <div class="card"><h4>CIA Triad</h4><b>Confidentiality</b> (only authorized eyes) · <b>Integrity</b> (data not altered) · <b>Availability</b> (accessible when needed)</div>
+    <div class="card"><h4>Threat / Vulnerability / Risk</h4><b>Threat</b> = what could cause harm · <b>Vulnerability</b> = weakness that can be exploited · <b>Risk</b> = likelihood × impact of a threat hitting a vulnerability</div>
+    <div class="card"><h4>Malware</h4>Any malicious software (ransomware, trojans, spyware, viruses, worms).</div>
+    <div class="card"><h4>Virus vs Worm</h4><b>Virus</b> attaches to a file and needs a user to run it. <b>Worm</b> self-replicates and spreads across the network on its own.</div>
+    <div class="card"><h4>Social Engineering</h4>Manipulating people instead of systems. <b>Phishing</b> = fake emails/sites to steal credentials.</div>
+    <div class="card"><h4>Hashing</h4>One-way function → fixed-length output. Same input = same hash. Used for integrity checks and password storage. Examples: SHA-256 (MD5 is outdated).</div>
+    <div class="card"><h4>MFA: the 4 factors</h4>Something you <b>know</b> (password) · <b>have</b> (phone/token) · <b>are</b> (fingerprint) · <b>somewhere you are</b> (location). MFA = 2+ <i>different</i> categories.</div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <h2>Self-Quiz (tap to reveal)</h2>
+  <details><summary>1. How long is the preamble?</summary><div class="ans">7 bytes (plus 1-byte SFD)</div></details>
+  <details><summary>2. Binary of the SFD?</summary><div class="ans">10101011</div></details>
+  <details><summary>3. MAC length in bits? How many hex pairs?</summary><div class="ans">48 bits, 6 hex pairs</div></details>
+  <details><summary>4. PDU at Layers 4, 3, 2, 1?</summary><div class="ans">Segment/Datagram, Packet, Frame, Bits</div></details>
+  <details><summary>5. Min and max Ethernet frame size?</summary><div class="ans">64 bytes / 1518 bytes</div></details>
+  <details><summary>6. Ports 23, 88, 137, 161?</summary><div class="ans">Telnet, Kerberos, NetBIOS, SNMP</div></details>
+  <details><summary>7. Capture filter vs display filter?</summary><div class="ans">Capture filter limits what gets recorded; display filter hides/shows packets already captured.</div></details>
+  <details><summary>8. Need 2,500 subnets on a Class A. New prefix?</summary><div class="ans">/20 (2^12 = 4,096)</div></details>
+  <details><summary>9. Subnet ID and broadcast for 10.75.112.87/26?</summary><div class="ans">10.75.112.64 and 10.75.112.127</div></details>
+  <details><summary>10. Hosts per subnet for /23?</summary><div class="ans">2^9 − 2 = 510</div></details>
+  <details><summary>11. Which IPv6 prefix is link-local? ULA? Multicast?</summary><div class="ans">fe80::/10 · fd00::/8 (fc00::/7) · ff00::/8</div></details>
+  <details><summary>12. GUA bit split (P / S / I)?</summary><div class="ans">48 / 16 / 64</div></details>
+  <details><summary>13. ICMPv6 types 133–137?</summary><div class="ans">RS, RA, NS, NA, Redirect</div></details>
+  <details><summary>14. Which RA flag means "get DNS from DHCPv6 but build your own address"?</summary><div class="ans">O flag (stateless DHCPv6)</div></details>
+  <details><summary>15. Does SLAAC provide DNS?</summary><div class="ans">No</div></details>
+  <details><summary>16. DHCPv6 message order?</summary><div class="ans">Solicit → Advertise → Request → Reply</div></details>
+  <details><summary>17. IPv6 header size? Which field replaced TTL?</summary><div class="ans">40 bytes fixed · Hop Limit</div></details>
+  <details><summary>18. EtherType for IPv6? IPv4? ARP?</summary><div class="ans">0x86DD · 0x0800 · 0x0806</div></details>
+  <details><summary>19. Type 1 vs Type 2 hypervisor?</summary><div class="ans">Type 1 runs on bare metal (ESXi, Hyper-V); Type 2 runs inside an OS (VirtualBox, Parallels)</div></details>
+  <details><summary>20. Worm vs virus?</summary><div class="ans">Worm self-spreads over the network; virus needs a host file and user action</div></details>
+  <details><summary>21. Which RIR covers Australia?</summary><div class="ans">APNIC</div></details>
+  <details><summary>22. Vertical vs horizontal scaling?</summary><div class="ans">Vertical = beef up one machine; horizontal = add more machines</div></details>
+</section>
+
+</main>
+
+<footer>Networking midterm study guide · built by Jordan Jones</footer>
+</body>
+</html>
